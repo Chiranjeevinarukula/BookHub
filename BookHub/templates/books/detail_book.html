@@ -15,6 +15,17 @@
         </div>
       </div>
   </div>
+  <div class="col-lg-9">
+    <form action="{% url 'createreview' bookId=book.id %}" method="post">
+      {% csrf_token %}
+      
+      <label for="message">Enter your Review:</label><br>
+      <textarea class="form-control" id="message" name="review" rows="4" cols="50" value="{{review_form.review}}" required></textarea><br>
+      
+      <!-- Submit Button -->
+      <input type="submit" value="Submit">
+  </form>
+  </div>
 </div>
 
 {% endblock %}
