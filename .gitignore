@@ -154,7 +154,7 @@ cython_debug/
 
 BookHub/images
 BookHub/media
-
+BookHub/books/migrations
 
 
 # PyCharm
