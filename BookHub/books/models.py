@@ -34,3 +34,11 @@ class Rating(models.Model):
         null=True,
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
+
+class Reply(models.Model):
+    repliedUser = models.ForeignKey(User, related_name='reply', on_delete=models.CASCADE)
+    reply = models.CharField(max_length=250)
+    created_at = models.DateTimeField(auto_now_add=True)
+    review = models.ForeignKey(Review,related_name='reply',on_delete=models.CASCADE)
+    def __str__(self):
+        return self.reply
