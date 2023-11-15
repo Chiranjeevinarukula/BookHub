@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.views.generic import ListView,DetailView
-from .models import Book,Review
+from .models import Book,Review,Rating
 from django.shortcuts import reverse
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import ReviewForm
+from .forms import ReviewForm,RatingForm
 
 # Create your views here.
 class books_listview(ListView):
@@ -20,6 +20,7 @@ class book_detailview(DetailView):
 
 class reviewCreate(LoginRequiredMixin,View):
     template_name = 'books/detail_book.html'
+    print('hey')
     def post(self,request,bookId):
         form=ReviewForm(request.POST)
         if form.is_valid():
@@ -30,3 +31,23 @@ class reviewCreate(LoginRequiredMixin,View):
             return HttpResponseRedirect(reverse('detail_book', args=(bookId,)))
         else:
             return HttpResponseRedirect(reverse('detail_book', args=(bookId,)))
+        
+class ratingCreate(LoginRequiredMixin,View):
+    template_name = 'books/detail_book.html'
+    def post(self,request,bookId):
+        print('calling')
+        try:
+            rating = Rating.objects.get(ratedUser__id = request.user.id ,book__id = bookId)
+            form = RatingForm(request.POST,instance=rating)
+            form.save()
+            return HttpResponseRedirect(reverse('detail_book',args=(bookId,)))
+        except Rating.DoesNotExist:
+            form=RatingForm(request.POST)
+            if form.is_valid():
+                data = form.save(commit=False)  
+                data.ratedUser = request.user
+                data.book_id = bookId  
+                data.save()
+                return HttpResponseRedirect(reverse('detail_book', args=(bookId,)))
+            else:
+                return HttpResponseRedirect(reverse('detail_book', args=(bookId,))) 

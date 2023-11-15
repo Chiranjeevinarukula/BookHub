@@ -1,0 +1,60 @@
+
+.logo {
+    font-family: 'Peralta', cursive;
+  }
+  
+  .logo a {
+    color: rgba(0,0,0,.9);
+  }
+  
+  .logo a:hover,
+  .logo a:active {
+    text-decoration: none;
+  }
+  .book-image {
+    min-width: 150px;
+    max-width: 150px;  /* Set the maximum width */
+    max-height: 191px; /* Set the maximum height */
+    width: auto;      /* Allow the width to adjust automatically to maintain aspect ratio */
+    height: auto;     /* Allow the height to adjust automatically to maintain aspect ratio */
+}
+
+.link-muted { color: #aaa; } .link-muted:hover { color: #1266f1; }
+
+
+
+.rating {
+  margin-top: 40px;
+  border: none;
+  float: left;
+}
+
+.rating > label {
+  color: #90A0A3;
+  float: right;
+}
+
+.rating > label:before {
+  margin: 5px;
+  font-size: 2em;
+  font-family: FontAwesome;
+  content: "\f005";
+  display: inline-block;
+}
+
+.rating > input {
+  display: none;
+}
+
+.rating > input:checked ~ label,
+.rating:not(:checked) > label:hover,
+.rating:not(:checked) > label:hover ~ label {
+  color: #F79426;
+}
+
+.rating > input:checked + label:hover,
+.rating > input:checked ~ label:hover,
+.rating > label:hover ~ input:checked ~ label,
+.rating > input:checked ~ label:hover ~ label {
+  color: #FECE31;
+}

@@ -28,11 +28,9 @@ class Review(models.Model):
         return self.review
 
 class Rating(models.Model):
-    book = models.ForeignKey(Book,related_name='rating',on_delete=models.CASCADE)
-    ratedUser = models.ForeignKey(User, related_name='rating', on_delete=models.CASCADE)
+    book = models.ForeignKey(Book,related_name='rating',on_delete=models.CASCADE,null=True)
+    ratedUser = models.ForeignKey(User, related_name='rating', on_delete=models.CASCADE,null=True)
     rating = models.IntegerField(
         null=True,
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
-    def __str__(self):
-        return self.review.book.title
