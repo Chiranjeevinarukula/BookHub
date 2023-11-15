@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect,HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReviewForm,RatingForm,BookForm
 from django.urls import reverse_lazy
+from django.db.models import Q 
 
 # Create your views here.
 class books_listview(ListView):
@@ -14,6 +15,17 @@ class books_listview(ListView):
     template_name = 'books/get_books.html'
     context_object_name = 'books'
 
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+
+        if query:
+            return Book.objects.filter(
+                Q(title__icontains=query) |
+                Q(author__icontains=query) |
+                Q(genre__icontains=query)
+            )
+        return Book.objects.all()
+    
 class book_detailview(DetailView):
     model = Book
     template_name='books/detail_book.html'
