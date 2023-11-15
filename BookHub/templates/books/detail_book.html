@@ -43,6 +43,27 @@
       <!-- Submit Button -->
       <input type="submit" value="Submit">
   </form>
+
+  {% for review in book.review.all %}
+  <div class="comments-container">
+    <div class="comment">
+        <div class="comment-text">
+            <a href="">
+                <div style="cursor: pointer; color: blue; text-decoration: underline;">
+                    {% if review.reviewedUser.profile.profile_pic %}
+                        <img class="user-profile" src="{{review.reviewedUser.profile.profile_pic.url}}" alt="User Avatar">
+                    {% else %}
+                        <div class="user-profile"></div>
+                    {% endif %}
+                    <span class="user-name">{{review.reviewedUser}}:</span> 
+                </div>
+            </a>
+            {{review.review}}
+            {{ book.rating.first.rating }}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
   </div>
 </div>
 
