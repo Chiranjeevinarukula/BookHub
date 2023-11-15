@@ -6,4 +6,5 @@ urlpatterns = [
     path('<int:pk>/',views.book_detailview.as_view(),name = 'detail_book'),
     path('rating/<int:bookId>/',views.ratingCreate.as_view(),name='createrating'),
     path('review/<int:bookId>/',views.reviewCreate.as_view(),name='createreview'),
+    path('add/',views.CreateBookView.as_view(),name='add_book'),
 ]
