@@ -15,7 +15,7 @@ class Book(models.Model):
         return self.title
     
     def get_rating_values(self):
-        return self.review.values_list('rating', flat=True)
+        return self.rating.values_list('rating', flat=True)
     
 
 class Review(models.Model):

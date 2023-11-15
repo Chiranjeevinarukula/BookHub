@@ -130,3 +130,7 @@
 .rating > input:checked ~ label:hover ~ label {
   color: #FECE31;
 }
+
+.checked {
+  color: orange;
+}
