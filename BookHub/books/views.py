@@ -3,7 +3,7 @@ from django.views.generic import ListView,DetailView,CreateView
 from .models import Book,Review,Rating
 from django.shortcuts import reverse
 from django.views import View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect,HttpResponseForbidden
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReviewForm,RatingForm,BookForm
 from django.urls import reverse_lazy
@@ -63,3 +63,15 @@ class CreateBookView(LoginRequiredMixin,CreateView):
         # Automatically set the user and book for the comment
         form.instance.user = self.request.user
         return super().form_valid(form)
+    
+class UpdateBook(View):
+    form_class=BookForm
+    template_name = 'book/get_books.html'
+    def post(self,request,bookId):
+        book=Book.objects.get(id=bookId)
+        if book.user != request.user:
+            return HttpResponseForbidden('You dont have authority to change')
+        form = BookForm(request.POST,instance=book)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect(reverse('get_books'))
