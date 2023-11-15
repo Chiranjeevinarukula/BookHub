@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.views.generic import ListView,DetailView,CreateView
+from django.shortcuts import render,get_object_or_404
+from django.views.generic import ListView,DetailView,CreateView,DeleteView
 from .models import Book,Review,Rating
 from django.shortcuts import reverse
 from django.views import View
@@ -75,3 +75,20 @@ class UpdateBook(View):
         if form.is_valid():
             form.save()
         return HttpResponseRedirect(reverse('get_books'))
+    
+class OwnerMixin(LoginRequiredMixin):
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if not self.is_owner(obj):
+            return HttpResponseForbidden("You don't have the required permissions to access this page.")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        return get_object_or_404(Book, pk=self.kwargs['pk'])  
+    def is_owner(self, obj):
+        return obj.user == self.request.user  
+
+class DeleteBook(OwnerMixin,DeleteView):
+    model=Book
+    success_url = reverse_lazy('get_books')

@@ -8,4 +8,5 @@ urlpatterns = [
     path('review/<int:bookId>/',views.reviewCreate.as_view(),name='createreview'),
     path('add/',views.CreateBookView.as_view(),name='add_book'),
     path('<int:bookId>/update',views.UpdateBook.as_view(),name='update_book'),
+    path('<int:pk>/delete',views.DeleteBook.as_view(),name='deleteBook'),
 ]
