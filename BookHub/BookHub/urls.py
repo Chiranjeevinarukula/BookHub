@@ -32,5 +32,6 @@ urlpatterns = [
     path('profile/edit/',views.ProfileUpdateView.as_view(),name='profileUpdate'),
     path('profile/change_password/', PasswordChangeView.as_view(template_name='account/change_password.html',success_url=reverse_lazy('password_change_done')), name='change_password'),
     path('profile/password_change_done/', views.password_change_done, name='password_change_done'),
+    path('<int:userId>/block',views.blockUser,name='blockUser'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
