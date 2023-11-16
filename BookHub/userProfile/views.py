@@ -3,7 +3,7 @@ from .forms import signUpForm,ProfileForm,UserForm
 from django.views import View
 from django.contrib.auth import login
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden,HttpResponseRedirect
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 
@@ -51,3 +51,12 @@ class ProfileUpdateView(CurrentUserRequiredMixin,View):
 
 def password_change_done(request):
     return render(request, 'account/password_change_done.html')
+
+def blockUser(request,userId):
+    user = User.objects.get(id=userId)
+    if request.user.is_superuser:
+        user.is_active = not user.is_active
+        user.save()
+        return HttpResponseRedirect(reverse('profile', args=[userId]))
+    else:
+        return HttpResponseForbidden("Access Denied: You are not a superuser.")

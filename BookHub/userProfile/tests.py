@@ -133,3 +133,31 @@ class PasswordChangeDoneViewTestCase(TestCase):
         response = self.client.get(reverse('password_change_done'))
         self.assertEqual(response.status_code, 200)
 
+class BlockUserTestCase(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username='admin', password='admin_password', email='admin@example.com'
+        )
+        self.user = User.objects.create_user(
+            username='test_user', password='test_password', email='test@example.com'
+        )
+
+    def test_block_user_superuser(self):
+        self.client.login(username='admin', password='admin_password')
+        initial_status = self.user.is_active
+        response = self.client.post(reverse('blockUser', args=[self.user.id]))
+        self.user.refresh_from_db()
+        self.assertNotEqual(initial_status, self.user.is_active)
+        self.assertRedirects(response, reverse('profile', args=[self.user.id]))
+
+    def test_block_user_regular_user(self):
+        self.client.login(username='test_user', password='test_password')
+        response = self.client.post(reverse('blockUser', args=[self.user.id]))
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(self.user.is_active)
+
+    def test_block_user_unauthenticated(self):
+        response = self.client.post(reverse('blockUser', args=[self.user.id]))
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(self.user.is_active)
+
