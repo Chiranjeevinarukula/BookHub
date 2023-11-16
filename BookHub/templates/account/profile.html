@@ -15,7 +15,7 @@
     <p>Email: {{user.email}}</p>
     <p>First name:{{user.first_name}}</p>
     <p>Last name: {{user.last_name}}</p>
-    <form action="" method="GET">
+    <form action="{% url 'profileUpdate' %}" method="GET">
         <!-- Hidden input field to trigger the navigation -->
         <input type="hidden" name="navigate" value="true">
         {% if user.id == request.user.id %}
