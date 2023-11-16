@@ -179,3 +179,41 @@ class ReviewReplyPostTestCase(TestCase):
 
         self.assertEqual(response.data, expected_data)
         self.assertTrue(Reply.objects.filter(id=response.data["id"]).exists())
+
+
+class ReviewDeleteTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.book = Book.objects.create(
+            user=self.user,
+            title='Test Title',
+            author='Test Author',
+            isbn='1234567890123',
+            cover_image='path/to/cover.jpg',
+            genre='Test Genre'
+        )
+        self.review = Review.objects.create(
+            reviewedUser=self.user,
+            book=self.book,
+            review="Great book, highly recommended."
+        )
+        self.url = reverse('reviewDelete', args=[self.review.pk])
+
+    def test_review_delete_view(self):
+        self.client.login(username='testuser', password='testpassword')
+        initial_review_count = self.book.review.count()
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Review.objects.filter(pk=self.review.pk).exists())
+        self.assertEqual(self.book.review.count(), initial_review_count - 1)
+        print(response.content.decode())
+        expected_url = reverse('detail_book', args=[self.book.id])
+        self.assertRedirects(response, expected_url)
+
+    def test_review_delete_view_unauthenticated_user(self):
+        initial_review_count = self.book.review.count()
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.content.decode(), "Cannot delete other's review")
+        self.assertTrue(Review.objects.filter(pk=self.review.pk).exists())
+        self.assertEqual(self.book.review.count(), initial_review_count)
