@@ -11,6 +11,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ReplySerializer
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 class books_listview(ListView):
@@ -115,3 +116,13 @@ def getReplies(request,pk):
        return Response(replies) 
     serializer = ReplySerializer(replies.reply,many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+@login_required
+def CreateReply(request):
+    if request.method == 'POST':
+        serializer = ReplySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)

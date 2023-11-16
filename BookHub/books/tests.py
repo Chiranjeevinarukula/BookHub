@@ -129,3 +129,53 @@ class ReviewReplyTestCase(TestCase):
         ]
         self.maxDiff = None
         self.assertEqual(response_data, expected_data)
+
+class ReviewReplyPostTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='hp', password='password')
+        self.book = Book.objects.create(
+            user=self.user,
+            title='Test Title',
+            author='Test Author',
+            isbn='1234567890123',
+            cover_image='path/to/cover.jpg',
+            genre='Test Genre'
+        )
+        self.review = Review.objects.create(
+            reviewedUser=self.user,
+            book=self.book,
+            review="Great book, highly recommended."
+        )
+        self.client = APIClient()
+    def test_create_review_reply_without_login(self):
+        data = {
+            "reply": "testing reply",
+            "review": self.review.id,
+            "repliedUser":self.user.id,
+        }
+        url = '/books/review/reply/'
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.assertIn('/accounts/login/', response.url)
+
+    def test_create_review_reply(self):
+        self.client.force_login(self.user)
+        data = {
+            "reply": "testing reply",
+            "review": self.review.id,
+            "repliedUser":self.user.id,
+        }
+        url = '/books/review/reply/'
+        response = self.client.post(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        expected_data = {
+            "id": response.data["id"],
+            "reply": "testing reply",
+            "created_at": response.data["created_at"],
+            "repliedUser": "hp",
+            "review": "Great book, highly recommended."
+        }
+
+        self.assertEqual(response.data, expected_data)
+        self.assertTrue(Reply.objects.filter(id=response.data["id"]).exists())
