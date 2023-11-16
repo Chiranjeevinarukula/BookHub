@@ -63,8 +63,22 @@
             </a>
             {{review.review}}
             {{ book.rating.first.rating | rating }}
+            <div class="reply-button">Reply</div>
             <div class="load-replies-button" data-review-id="{{review.id}}">Load Replies</div>
             <div class="replies"></div>
+            <div class="reply-form" style="display: none;">
+              {{user.username}}
+                <form>
+                    <input type="hidden" id="user-name" name="repliedUser" value="{{ user.id }}">
+                    <input type="hidden" id="user-comment" name="review" value="{{ review.id }}">
+                    <textarea class="reply-form-textarea" name="reply" placeholder="Your reply">{{ review.reviewreply }}</textarea>
+                    {% if user.is_authenticated %} 
+                        <button class="submit-reply">Submit</button>
+                    {% else %}
+                    You are not logged in.<a href="{% url 'login' %}">Login</a> By link
+                    {% endif %}
+                </form>
+            </div>
         </div>
       </div>
     </div>
@@ -76,6 +90,22 @@
 
 {% block js %}
   <script>
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Check if this cookie is the one we're looking for
+            if (cookie.substring(0, name.length + 1) === name + '=') {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+      }
+      return cookieValue;
+    }
+
       $(document).ready(function() {
       // Load Replies Button Click
       $(".load-replies-button").click(function() {
@@ -116,6 +146,39 @@
                       repliesContainer.append(replyElement);
               }
           });
+      });
+
+      $(".reply-button").click(function() {
+          const replyForm = $(this).siblings(".reply-form");
+          replyForm.toggle(); // Toggle the visibility of the reply form
+      });
+  
+      // Submit Reply Button Click (You can adapt this part to your specific form)
+      $(".submit-reply").click(function(e) {
+          e.preventDefault(); // Prevent the default form submission
+  
+          const replyForm = $(this).closest("form");
+          const formData = replyForm.serialize(); // Serialize form data
+          // Send an AJAX request to submit the reply 
+          $.ajax({
+              url: "/books/review/reply/", // Replace with your actual endpoint
+              type: "POST",
+              data: formData,
+              dataType: "json",
+              headers: {
+                  'X-CSRFToken': getCookie('csrftoken')  // Include the CSRF token
+              },
+              success: function(response) {
+                  // Handle the response (e.g., display a success message)
+                  console.log("Reply submitted successfully:", response);
+                  replyForm.toggle();
+                  // You may also clear the form or update the replies section
+              },
+              error: function(error) {
+                  console.error("An error occurred:", error);
+              }
+          });
+          
       });
   });
   </script>

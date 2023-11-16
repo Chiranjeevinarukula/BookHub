@@ -135,7 +135,7 @@
   color: orange;
 }
 
-.load-replies-button {
+.load-replies-button , .reply-button {
   cursor: pointer;
   color: blue;
 }
