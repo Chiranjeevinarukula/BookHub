@@ -63,6 +63,8 @@
             </a>
             {{review.review}}
             {{ book.rating.first.rating | rating }}
+            <div class="load-replies-button" data-review-id="{{review.id}}">Load Replies</div>
+            <div class="replies"></div>
         </div>
       </div>
     </div>
@@ -70,4 +72,51 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block js %}
+  <script>
+      $(document).ready(function() {
+      // Load Replies Button Click
+      $(".load-replies-button").click(function() {
+        console.log('called')
+          const repliesContainer = $(this).siblings(".replies");
+          const reviewId = $(this).data("review-id");
+          console.log(reviewId)
+          // Send an AJAX request to fetch replies
+          $.ajax({
+              url: `/books/review/${reviewId}/getreplies`, // Replace with your actual endpoint
+              type: "GET",
+              dataType: "json",
+              success: function(data) {
+                  // Clear existing replies
+                  repliesContainer.empty();
+                  console.log(data)
+                  // Iterate through the fetched replies and append them to the container
+                  $.each(data, function(index, reply) {
+                    console.log(reply.repliedUser.profile)
+                      const replyElement = `
+                          <div class="sample-reply">
+                              <span class="user-name">${reply.repliedUser}:</span> ${reply.reply}
+                          </div>`;
+                      repliesContainer.append(replyElement);
+                  });
+                  if(data.length==0){
+                    const replyElement = `
+                          <div class="sample-reply">
+                              <span class="user-name">No replies</span>
+                          </div>`;
+                      repliesContainer.append(replyElement);
+                  }
+                  // Show the replies container
+                  repliesContainer.show();
+              },
+              error: function(error) {
+                  console.error("An error occurred:", error);
+                      repliesContainer.append(replyElement);
+              }
+          });
+      });
+  });
+  </script>
 {% endblock %}

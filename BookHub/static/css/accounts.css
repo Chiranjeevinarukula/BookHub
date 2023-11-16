@@ -134,3 +134,27 @@
 .checked {
   color: orange;
 }
+
+.load-replies-button {
+  cursor: pointer;
+  color: blue;
+}
+
+.sample-reply {
+  background-color: #e6e6e6;
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.user-profile {
+  width: 30px;
+  height: 30px;
+  background-color: #ccc;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.user-name {
+  font-weight: bold;
+}
