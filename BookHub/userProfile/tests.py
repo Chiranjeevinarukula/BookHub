@@ -94,3 +94,42 @@ class ProfileUpdateViewTestCase(TestCase):
         updated_profile = Profile.objects.get(user=self.user)
         self.assertEqual(updated_profile.bio, 'New bio')
         self.assertEqual(updated_profile.favorite_genres, 'New genres')
+
+class PasswordChangeViewTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.url = reverse('change_password')
+
+    def test_password_change_view_get(self):
+        self.client.login(username='testuser', password='testpassword')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_password_change_view_post_valid_data(self):
+        self.client.login(username='testuser', password='testpassword')
+        data = {
+            'old_password': 'testpassword',
+            'new_password1': 'newtestpassword',
+            'new_password2': 'newtestpassword',
+        }
+        response = self.client.post(self.url, data=data)
+        self.assertRedirects(response, reverse('password_change_done'))
+        updated_user = User.objects.get(pk=self.user.pk)
+        self.assertTrue(updated_user.check_password('newtestpassword'))
+
+    def test_password_change_view_post_invalid_data(self):
+        self.client.login(username='testuser', password='testpassword')
+        data = {
+            'old_password': 'invalidpassword',  
+            'new_password1': 'newtestpassword',
+            'new_password2': 'newtestpassword',
+        }
+        response = self.client.post(self.url, data=data)
+        form_errors = response.context['form'].errors
+        self.assertIn('old_password', form_errors)
+        self.assertIn('Your old password was entered incorrectly. Please enter it again.', form_errors['old_password'])
+class PasswordChangeDoneViewTestCase(TestCase):
+    def test_password_change_done_view(self):
+        response = self.client.get(reverse('password_change_done'))
+        self.assertEqual(response.status_code, 200)
+
