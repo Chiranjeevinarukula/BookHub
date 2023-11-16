@@ -3,7 +3,7 @@ from django.views.generic import ListView,DetailView,CreateView,DeleteView
 from .models import Book,Review,Rating
 from django.shortcuts import reverse
 from django.views import View
-from django.http import HttpResponseRedirect,HttpResponseForbidden
+from django.http import HttpResponseRedirect,HttpResponseForbidden,Http404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReviewForm,RatingForm,BookForm
 from django.urls import reverse_lazy
@@ -126,3 +126,19 @@ def CreateReply(request):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+
+
+class ReviewDelete(DeleteView):
+    model = Review
+    def get_success_url(self):
+        return reverse('detail_book', args=[self.get_object().book.id])
+    def delete(self, request, *args, **kwargs):
+        # the Post object
+        self.object = self.get_object()
+        if self.object.reviewedUser == request.user:
+            success_url = self.get_success_url()
+            self.object.delete()
+            return HttpResponseRedirect(success_url)
+        else:
+            return HttpResponseForbidden("Cannot delete other's review")

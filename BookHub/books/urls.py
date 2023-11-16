@@ -11,4 +11,5 @@ urlpatterns = [
     path('<int:pk>/delete',views.DeleteBook.as_view(),name='deleteBook'),
     path('review/<int:pk>/getreplies',views.getReplies,name='getrepliesapi'),
     path('review/reply/',views.CreateReply,name='replycreate'),
+    path('review/<int:pk>/delete',views.ReviewDelete.as_view(),name='reviewDelete'),
 ]
