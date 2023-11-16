@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form id="profileForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="editUsername">Username:</label>
+        <input type="text" id="editUsername" name="{{form.username.name}}" value="{{user.username}}"><br><br>
+        <label for="editEmail">Email:</label>
+        <input type="text" id="editEmail" name="{{form.email.name}}" value="{{user.email}}"><br><br>
+        <label for="editLocation">First Name:</label>
+        <input type="text" id="editLocation" name="{{form.first_name.name}}" value="{{user.first_name}}"><br><br>
+        <label for="editLastName">First Name:</label>
+        <input type="text" id="editLastName" name="{{form.last_name.name }}" value="{{user.last_name}}"><br><br>
+        <label for="bio">Bio:</label><br>
+        <textarea id="bio" name = {{profileform.bio.name}}  rows="4" cols="50">{{ user.profile.bio }}</textarea><br><br>
+        
+        <label for="genre">Favorite Genre:</label><br>
+        <input type="text" id="genre" name = {{profileform.favorite_genres.name}} value="{{ user.profile.favorite_genres }}"><br><br>
+        
+        
+        <label for="profile_pic">Profile Picture:</label><br>
+        <input type="file" id="profile_pic" name="profile_pic" accept="image/*" name = {{profileform.profile_pic.name}} value="{{ user.profile.profile_pic }}"><br><br>
+        <button type="submit" onclick="saveProfile()">Save</button>
+    </form>
+{% endblock %}

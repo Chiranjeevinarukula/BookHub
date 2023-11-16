@@ -27,5 +27,6 @@ urlpatterns = [
     path('signup/',views.SignUpView.as_view(),name='signup'),
     path('books/',include('books.urls')),
     path('profile/<int:pk>/',views.profileView,name='profile'),
+    path('profile/edit/',views.ProfileUpdateView.as_view(),name='profileUpdate'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
