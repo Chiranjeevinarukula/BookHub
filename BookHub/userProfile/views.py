@@ -4,7 +4,8 @@ from django.views import View
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 # Create your views here.
 
@@ -47,3 +48,6 @@ class ProfileUpdateView(CurrentUserRequiredMixin,View):
             return redirect(reverse('profile',args=[user.pk]))
         return render(request,'account/profileUpdate.html',{'form': form,'profileform':profileUpdateForm})
 
+
+def password_change_done(request):
+    return render(request, 'account/password_change_done.html')
