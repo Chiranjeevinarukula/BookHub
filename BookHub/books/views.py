@@ -8,6 +8,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import ReviewForm,RatingForm,BookForm
 from django.urls import reverse_lazy
 from django.db.models import Q 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import ReplySerializer
 
 # Create your views here.
 class books_listview(ListView):
@@ -104,3 +107,11 @@ class OwnerMixin(LoginRequiredMixin):
 class DeleteBook(OwnerMixin,DeleteView):
     model=Book
     success_url = reverse_lazy('get_books')
+
+@api_view(['GET'])
+def getReplies(request,pk):
+    replies = get_object_or_404(Review,id=pk)
+    if(not replies):
+       return Response(replies) 
+    serializer = ReplySerializer(replies.reply,many=True)
+    return Response(serializer.data)

@@ -2,7 +2,11 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.http import HttpResponseForbidden
-from .models import Book
+from .models import Book,Review, Reply 
+from rest_framework.test import APIClient
+from rest_framework import status
+from django.contrib.auth.models import User
+import json
 
 class UpdateBookTestCase(TestCase):
     def setUp(self):
@@ -69,3 +73,59 @@ class DeleteBookTestCase(TestCase):
         url = reverse('deleteBook', args=[self.book.id])
         response = self.client.post(url)
         self.assertIsInstance(response, HttpResponseForbidden)
+
+
+
+
+class ReviewReplyTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='hp', password='password')
+        self.book = Book.objects.create(
+            user=self.user,
+            title='Test Title',
+            author='Test Author',
+            isbn='1234567890123',
+            cover_image='path/to/cover.jpg',
+            genre='Test Genre'
+        )
+        self.review = Review.objects.create(
+            reviewedUser=self.user,
+            book=self.book,
+            review="Great book, highly recommended."
+        )
+        self.reply1 = Reply.objects.create(
+            repliedUser=self.user,
+            review=self.review,
+            reply="testing reply"
+        )
+        self.reply2 = Reply.objects.create(
+            repliedUser=self.user,
+            review=self.review,
+            reply="Yeah correct"
+        )
+        self.client = APIClient()
+
+    def test_get_replies(self):
+        url = reverse('getrepliesapi', args=[self.review.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response_data = json.loads(response.content)
+
+        expected_data = [
+            {
+                "id": self.reply1.id,
+                "reply": "testing reply",
+                "created_at": self.reply1.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                "repliedUser": "hp",
+                "review": "Great book, highly recommended."
+            },
+            {
+                "id": self.reply2.id,
+                "reply": "Yeah correct",
+                "created_at": self.reply2.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                "repliedUser": "hp",
+                "review": "Great book, highly recommended."
+            }
+        ]
+        self.maxDiff = None
+        self.assertEqual(response_data, expected_data)
