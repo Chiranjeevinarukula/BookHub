@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}<link rel="stylesheet" href="{% static 'css/profile.css' %}">{% endblock %}
+{% block content %}
+<div class="profile">
+    <h1>User Profile</h1>
+    {% if user.profile.profile_pic %}
+        <img src="{{ user.profile.profile_pic.url }}" alt="Profile Picture">
+    {% else %}
+        <!-- Display a default image if the user has no profile picture -->
+        <img src="{% static 'path/to/default/image.png' %}" alt="Default Image">
+    {% endif %}
+
+    <h2>Welcome, {{user.username}}</h2>
+    <p>Email: {{user.email}}</p>
+    <p>First name:{{user.first_name}}</p>
+    <p>Last name: {{user.last_name}}</p>
+    <form action="" method="GET">
+        <!-- Hidden input field to trigger the navigation -->
+        <input type="hidden" name="navigate" value="true">
+        {% if user.id == request.user.id %}
+            <button type="submit">Edit Profile</button>
+        {% endif %}
+    </form>
+</div>
+
+</div>
+{% endblock %}
