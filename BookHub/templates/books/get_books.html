@@ -52,7 +52,7 @@
                                 Genre is 
                                 <a href="{% url 'get_books' %}?query={{book.genre}}">#{{book.genre}}</a>
                                 <a href="{% url 'detail_book' book.pk %}" class="btn btn-primary ">Know More</a>
-                                {% if request.user == book.user %}
+                                {% if request.user == book.user or request.user.is_superuser %}
                                     <a href="#" class="btn btn-primary edit-button m-2" data-target="edit-form-{{ book.id }}" onclick="toggleEditForm({{ book.id }})">Edit</a>
                                     <a href="{% url 'deleteBook' pk=book.id %}" class="btn btn-primary">Delete</a>
                                 {% endif %}

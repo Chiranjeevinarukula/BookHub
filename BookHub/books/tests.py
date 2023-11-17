@@ -217,3 +217,108 @@ class ReviewDeleteTestCase(TestCase):
         self.assertEqual(response.content.decode(), "Cannot delete other's review")
         self.assertTrue(Review.objects.filter(pk=self.review.pk).exists())
         self.assertEqual(self.book.review.count(), initial_review_count)
+
+class AdminDeleteBookTestCase(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(username='admin', password='adminpass', email='admin@example.com')
+        self.user = User.objects.create_user(username='user', password='userpass', email='user@example.com')
+        self.book = Book.objects.create(
+            user=self.user,
+            title='Test Title',
+            author='Test Author',
+            isbn='1234567890123',
+            cover_image='path/to/cover.jpg',
+            genre='Test Genre'
+        )
+
+    def test_delete_book_as_admin(self):
+        self.client.login(username='admin', password='adminpass')
+        response = self.client.delete(reverse('deleteBook', args=[self.book.id]))
+        self.assertEqual(response.status_code, 302)
+        with self.assertRaises(Book.DoesNotExist):
+            Book.objects.get(id=self.book.id)
+
+    def test_delete_book_as_unauthority(self):
+        response = self.client.delete(reverse('deleteBook', args=[self.book.id]))
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Book.objects.filter(id=self.book.id).exists())
+
+class AdminUpdateBookTestCase(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(username='admin', password='adminpass', email='admin@example.com')
+        self.user = User.objects.create_user(username='user', password='userpass', email='user@example.com')
+        self.book = Book.objects.create(
+            user=self.user,
+            title='Test Title',
+            author='Test Author',
+            isbn='1234567890123',
+            cover_image='path/to/cover.jpg',
+            genre='Test Genre'
+        )
+
+    def test_delete_book_as_admin(self):
+        self.client.login(username='admin', password='adminpass')
+        updated_data = {
+            'title': 'Updated Title',
+            'author': 'Updated Author',
+            'isbn': '9876543210987',
+            'cover_image': 'path/to/updated_cover.jpg',
+            'genre': 'Updated Genre'
+        }
+        response = self.client.post(reverse('update_book', args=[self.book.id]),data=updated_data)
+
+        self.assertEqual(response.status_code, 302)
+        updated_book = Book.objects.get(id=self.book.id)
+        self.assertEqual(updated_book.title, 'Updated Title')
+        self.assertEqual(updated_book.author, 'Updated Author')
+        self.assertEqual(updated_book.isbn, '9876543210987')
+        self.assertEqual(updated_book.genre, 'Updated Genre')
+
+    def test_delete_book_as_unauthority(self):
+        response = self.client.delete(reverse('deleteBook', args=[self.book.id]))
+        self.assertEqual(response.status_code, 403)
+        updated_book = Book.objects.get(id=self.book.id)
+        self.assertEqual(updated_book.title, self.book.title)
+        self.assertEqual(updated_book.author, self.book.author)
+
+class ReviewDeleteViewTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.superuser = User.objects.create_superuser(username='adminuser', password='adminpassword', email='admin@example.com')
+        self.book = Book.objects.create(
+            user=self.user,
+            title='Test Title',
+            author='Test Author',
+            isbn='1234567890123',
+            cover_image='path/to/cover.jpg',
+            genre='Test Genre'
+        )
+        self.review = Review.objects.create(
+            reviewedUser=self.user,
+            book=self.book,
+            review="Great book, highly recommended."
+        )
+        self.url = reverse('reviewDelete', args=[self.review.pk])
+
+    def test_delete_review_by_owner(self):
+        self.client.login(username='testuser', password='testpassword')
+        initial_count = Review.objects.count()
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Review.objects.count(), initial_count - 1)
+
+    def test_delete_review_by_non_owner(self):
+        non_owner = User.objects.create_user(username='otheruser', password='otherpassword')
+        self.client.login(username='otheruser', password='otherpassword')
+        initial_count = Review.objects.count()
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(Review.objects.count(), initial_count)
+        self.assertEqual(response.content.decode('utf-8'), "Cannot delete other's review")
+    
+    def test_delete_review_by_superuser(self):
+        self.client.login(username='adminuser', password='adminpassword')
+        initial_count = Review.objects.count()
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Review.objects.count(), initial_count - 1)

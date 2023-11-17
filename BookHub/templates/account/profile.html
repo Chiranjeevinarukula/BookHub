@@ -22,6 +22,19 @@
             <button type="submit">Edit Profile</button>
         {% endif %}
     </form>
+    {% if  request.user.is_superuser and user != request.user %}
+        {% if user.is_active %}
+            <form method="post" action="{% url 'blockUser' userId=user.id %}">
+                {% csrf_token %}
+                <button class="m-2" type="submit" name="action" value="block">Block</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'blockUser' user.id %}">
+                {% csrf_token %}
+                <button class="m-2" type="submit" name="action" value="unblock">Unblock</button>
+            </form>
+        {% endif %}
+    {% endif %}
 </div>
 
 </div>

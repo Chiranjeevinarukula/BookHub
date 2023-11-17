@@ -85,7 +85,7 @@ class UpdateBook(View):
     template_name = 'book/get_books.html'
     def post(self,request,bookId):
         book=Book.objects.get(id=bookId)
-        if book.user != request.user:
+        if book.user != request.user and not request.user.is_superuser:
             return HttpResponseForbidden('You dont have authority to change')
         form = BookForm(request.POST,instance=book)
         if form.is_valid():
@@ -103,7 +103,7 @@ class OwnerMixin(LoginRequiredMixin):
     def get_object(self):
         return get_object_or_404(Book, pk=self.kwargs['pk'])  
     def is_owner(self, obj):
-        return obj.user == self.request.user  
+        return obj.user == self.request.user or self.request.user.is_superuser
 
 class DeleteBook(OwnerMixin,DeleteView):
     model=Book
@@ -136,7 +136,7 @@ class ReviewDelete(DeleteView):
     def delete(self, request, *args, **kwargs):
         # the Post object
         self.object = self.get_object()
-        if self.object.reviewedUser == request.user:
+        if self.object.reviewedUser == request.user or request.user.is_superuser:
             success_url = self.get_success_url()
             self.object.delete()
             return HttpResponseRedirect(success_url)
