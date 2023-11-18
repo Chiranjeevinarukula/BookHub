@@ -17,23 +17,14 @@
                   <form class="mx-1 mx-md-4" method="post">
                     {% csrf_token %}
                     {% for field in form %}
-                          {% if field.errors %}
-                          <div class="d-flex flex-row align-items-center mb-4">
-                            <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                            <div class="form-outline flex-fill mb-0">
-                              <input type="{{field.field.widget.input_type}}" name="{{field.name}}" id="form3Example1c" class="form-control is-invalid" />
-                              <div id="validationServer03Feedback" class="invalid-feedback">{{field.errors}}</div>
-                            </div>
-                          </div>
-                          {% else %}
-                            <div class="d-flex flex-row align-items-center mb-4">
-                                <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                <input type="{{field.field.widget.input_type}}" name="{{field.name}}" id="form3Example1c" class="form-control " />
-                                <label class="form-label"  for="form3Example1c">{{field.name}}</label>
-                                </div>
-                            </div>
-                          {% endif %}
+                      <div class="d-flex flex-row align-items-center mb-4">
+                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                        <div class="form-outline flex-fill mb-0">
+                          <label for="id_{{ field.name }}">{{ field.label }}</label>
+                          <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="id_{{ field.name }}" class="form-control {% if field.errors %}is-invalid{% endif %}" />
+                          <div id="validationServer03Feedback" class="invalid-feedback">{{ field.errors }}</div>
+                        </div>
+                      </div>
                     {% endfor %}
                     {% if field.errors %}
                         <p style="color: red">{{ form.errors }}</p>
