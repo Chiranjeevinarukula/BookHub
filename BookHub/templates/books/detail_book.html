@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-lg-3">
+      <div class="sticky-top">
+        <div class="card" style="max-width: 18rem;">
+          <img class="card-img-top" src="{{ book.cover_image.url }}" alt="Card image cap">
+          <div class="card-body">
+            <p class="card-text">
+                <h1>{{book.title}}</h1>
+                <h5>{{book.author}}</h5></p>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}

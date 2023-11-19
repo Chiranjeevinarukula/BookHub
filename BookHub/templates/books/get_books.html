@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Books{% endblock %}
@@ -16,17 +17,17 @@
                             <div id="edit-form-{{ book.id }}" style="display: none;">
                                 <form method="post" action="">
                                     {% csrf_token %}
-                
+
                                     <div class="form-group">
                                         <label for="title">Title:</label>
                                         <input type="text" id="title" name="title" value="{{ book.title }}" class="form-control">
                                     </div>
-                
+
                                     <div class="form-group">
                                         <label for="author">Author:</label>
                                         <input type="text" id="author" name="author" value="{{ book.author }}" class="form-control">
                                     </div>
-                
+
                                     <div class="form-group">
                                         <label for="genre">Genre:</label>
                                         <input type="text" id="genre" name="genre" value="{{ book.genre }}" class="form-control">
@@ -35,20 +36,20 @@
                                         <label for="isbn">ISBN:</label>
                                         <input type="text" id="isbn" name="isbn" value="{{ book.isbn }}" class="form-control">
                                     </div>
-                                    
-                
+
+
                                     <!-- Additional form fields -->
-                
+
                                     <button type="submit" class="btn btn-success">Save</button>
                                 </form>
                             </div>
-                            
+
                             <div id="edit-content-{{ book.id }}">
                                 <h5 class="card-title">{{book.title}}</h5>
                                 <p class="card-text">Author : {{book.author}}</p>
                                 Genre is 
                                 <a href="{% url 'get_books' %}?query={{book.genre}}">#{{book.genre}}</a>
-                                <a href="" class="btn btn-primary ">Know More</a>
+                                <a href="{% url 'detail_book' book.pk %}" class="btn btn-primary ">Know More</a>
                                 {% if request.user.is_superuser %}
                                     <a href="#" class="btn btn-primary edit-button m-2" data-target="edit-form-{{ book.id }}" onclick="toggleEditForm({{ book.id }})">Edit</a>
                                     <a href="{% url 'deleteBook' pk=book.id %}" class="btn btn-primary">Delete</a>
