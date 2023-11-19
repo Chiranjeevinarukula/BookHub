@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from django.views.generic import ListView,DetailView
+from django.views.generic import ListView,DetailView,CreateView
 from .models import Book,Review,Rating
 from django.shortcuts import reverse
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import ReviewForm,RatingForm
+from .forms import ReviewForm,RatingForm,BookForm
+from django.urls import reverse_lazy
 
 # Create your views here.
 class books_listview(ListView):
@@ -51,3 +52,14 @@ class ratingCreate(LoginRequiredMixin,View):
                 return HttpResponseRedirect(reverse('detail_book', args=(bookId,)))
             else:
                 return HttpResponseRedirect(reverse('detail_book', args=(bookId,))) 
+        
+class CreateBookView(LoginRequiredMixin,CreateView):
+    model = Book
+    template_name='books/postbook.html'
+    form_class = BookForm
+    success_url=reverse_lazy('get_books')
+
+    def form_valid(self, form):
+        # Automatically set the user and book for the comment
+        form.instance.user = self.request.user
+        return super().form_valid(form)
