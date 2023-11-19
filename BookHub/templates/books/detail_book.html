@@ -16,6 +16,24 @@
       </div>
   </div>
   <div class="col-lg-9">
+    <div>
+      <form action="{% url 'createrating' bookId=book.id %}" method="post">
+          {% csrf_token %}
+          <div class="rating mr-auto">
+              <input type="radio" id="star5" name="rating" {% if book.rating.first.rating == 5 %}checked{% endif %} value="5" />
+              <label class="star" for="star5" title="Awesome" aria-hidden="true"></label>
+              <input type="radio" id="star4" name="rating"  {% if book.rating.first.rating == 4 %}checked{% endif %} value="4" />
+              <label class="star" for="star4" title="Great" aria-hidden="true"></label>
+              <input type="radio" id="star3" name="rating" value="3"  {% if book.rating.first.rating == 3 %}checked{% endif %}/>
+              <label class="star" for="star3" title="Very good" aria-hidden="true"></label>
+              <input type="radio" id="star2" name="rating" value="2"  {% if book.rating.first.rating == 2 %}checked{% endif %}/>
+              <label class="star" for="star2" title="Good" aria-hidden="true"></label>
+              <input type="radio" id="star1" name="rating" value="1"  {% if book.rating.first.rating == 1 %}checked{% endif %}/>
+              <label class="star" for="star1" title="Bad" aria-hidden="true"></label>
+            </div>
+            <input type="submit" value="Submit">
+      </form>
+    </div>
     <form action="{% url 'createreview' bookId=book.id %}" method="post">
       {% csrf_token %}
       
