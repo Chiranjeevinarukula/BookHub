@@ -7,4 +7,5 @@ urlpatterns = [
     path('rating/<int:bookId>/',views.ratingCreate.as_view(),name='createrating'),
     path('review/<int:bookId>/',views.reviewCreate.as_view(),name='createreview'),
     path('add/',views.CreateBookView.as_view(),name='add_book'),
+    path('<int:bookId>/update',views.UpdateBook.as_view(),name='update_book'),
 ]
