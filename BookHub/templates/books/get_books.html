@@ -2,7 +2,9 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Books{% endblock %}
-{% block js %}<script src="{% static 'js/admin.js' %}"></script>
+{% block js %}
+    <script src="{% static 'js/admin.js' %}"></script>
+    <script src="{% static 'js/books.js' %}"></script>
 {% endblock %}
 {% block content %}
 <a href="" class="btn btn-primary add-button">Add a Book</a>
@@ -15,7 +17,7 @@
                         max-width: 150px; ">
                         <div class="card-body">
                             <div id="edit-form-{{ book.id }}" style="display: none;">
-                                <form method="post" action="">
+                                <form method="post" action="{% url 'update_book' bookId=book.id %}">
                                     {% csrf_token %}
 
                                     <div class="form-group">
@@ -50,7 +52,7 @@
                                 Genre is 
                                 <a href="{% url 'get_books' %}?query={{book.genre}}">#{{book.genre}}</a>
                                 <a href="{% url 'detail_book' book.pk %}" class="btn btn-primary ">Know More</a>
-                                {% if request.user.is_superuser %}
+                                {% if request.user == book.user %}
                                     <a href="#" class="btn btn-primary edit-button m-2" data-target="edit-form-{{ book.id }}" onclick="toggleEditForm({{ book.id }})">Edit</a>
                                     <a href="{% url 'deleteBook' pk=book.id %}" class="btn btn-primary">Delete</a>
                                 {% endif %}
