@@ -65,7 +65,7 @@
             {{ book.rating.first.rating | rating }}
             <div class="reply-button">Reply</div>
             <div class="load-replies-button" data-review-id="{{review.id}}">Load Replies</div>
-            {% if request.user == review.reviewedUser %}
+            {% if request.user == review.reviewedUser or request.user.is_superuser %}
                 <form method="post" action="{% url 'reviewDelete' review.pk %}">
                   {% csrf_token %}
                   <input type="submit" value="Delete">
